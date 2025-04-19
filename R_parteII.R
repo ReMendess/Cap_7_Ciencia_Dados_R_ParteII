@@ -1,4 +1,9 @@
-## Alterado
+install.packages("readr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("readxl")
+install.packages("writexl")
+install.packages("psych")
 
 # Carregando pacotes
 library(readr)
