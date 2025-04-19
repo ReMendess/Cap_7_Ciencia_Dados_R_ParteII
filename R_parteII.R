@@ -5,6 +5,7 @@ install.packages("readxl")
 install.packages("writexl")
 install.packages("psych")
 
+
 # Carregando pacotes
 library(readr)
 library(dplyr)
@@ -14,11 +15,18 @@ library(writexl)
 library(psych)
 
 # Lendo o arquivo CSV
-dados <- read_csv("serie_historica_reduzida.csv")
+dados <- read_delim("serie_historica_reduzida.csv", delim = ";", locale = locale(decimal_mark = ","))  # se tiver números com vírgula
+# Remove possíveis espaços e substitui vírgulas por pontos, se necessário
+dados$producao_mil_t <- gsub(",", ".", dados$producao_mil_t)
+dados$producao_mil_t <- as.numeric(dados$producao_mil_t)
+
 
 # Visualizando os dados
 head(dados)
 str(dados)
+
+colnames(dados)
+
 
 #---------------------------------------------------------------------
 
