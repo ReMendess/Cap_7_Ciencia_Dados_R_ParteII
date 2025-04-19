@@ -19,6 +19,8 @@ dados <- read_delim("serie_historica_reduzida.csv", delim = ";", locale = locale
 # Remove possíveis espaços e substitui vírgulas por pontos, se necessário
 dados$producao_mil_t <- gsub(",", ".", dados$producao_mil_t)
 dados$producao_mil_t <- as.numeric(dados$producao_mil_t)
+dados$produto <- trimws(dados$produto)
+
 
 
 # Visualizando os dados
@@ -63,14 +65,80 @@ ggplot(dados, aes(x = producao_mil_t)) +
 
 
 -----------------------------------------------------------------------------------
+head(dados$produto)
   
+# Contagem de produtos
+contagem_produtos <- dados %>%
+  group_by(produto) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
   
-  # Contagem de produtos
-  contagem_produtos <- table(dados$produto)
 
 # Gráfico de barras
-ggplot(as.data.frame(contagem_produtos), aes(x = reorder(Var1, -Freq), y = Freq)) +
+# Gráfico de barras da contagem de produtos
+ggplot(contagem_produtos, aes(x = reorder(produto, -n), y = n)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Frequência dos Produtos", x = "Produto", y = "Frequência") +
   theme_minimal() +
-  coord_flip()
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+# Agregar produção total por ano
+#Gráfico de Linha 
+dados %>%
+  group_by(ano_agricola) %>%
+  summarise(producao_total = sum(producao_mil_t, na.rm = TRUE)) %>%
+  ggplot(aes(x = ano_agricola, y = producao_total, group = 1)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "darkblue") +
+  labs(title = "Evolução da Produção ao Longo dos Anos",
+       x = "Ano Agrícola", y = "Produção Total (mil t)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+##  Gráfico de Barras por Estado
+dados %>%
+  group_by(uf) %>%
+  summarise(producao_total = sum(producao_mil_t, na.rm = TRUE)) %>%
+  ggplot(aes(x = reorder(uf, -producao_total), y = producao_total)) +
+  geom_bar(stat = "identity", fill = "forestgreen") +
+  labs(title = "Produção Total por Estado", x = "Estado", y = "Produção (mil t)") +
+  theme_minimal()
+
+##Gráfico de Barras por Produto
+
+dados %>%
+  group_by(produto) %>%
+  summarise(producao_total = sum(producao_mil_t, na.rm = TRUE)) %>%
+  ggplot(aes(x = reorder(produto, -producao_total), y = producao_total)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  labs(title = "Produção Total por Produto", x = "Produto", y = "Produção (mil t)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+## Boxplot da Produção por Produto
+ggplot(dados, aes(x = produto, y = producao_mil_t)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Distribuição da Produção por Produto", x = "Produto", y = "Produção (mil t)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+##Heatmap: Produção por Ano e Estado
+library(ggplot2)
+
+dados %>%
+  group_by(ano_agricola, uf) %>%
+  summarise(producao_total = sum(producao_mil_t, na.rm = TRUE)) %>%
+  ggplot(aes(x = ano_agricola, y = uf, fill = producao_total)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  labs(title = "Mapa de Calor da Produção por Ano e Estado", x = "Ano Agrícola", y = "Estado") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
