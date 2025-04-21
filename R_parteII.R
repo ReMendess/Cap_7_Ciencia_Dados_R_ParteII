@@ -1,7 +1,7 @@
 # RenanMendes_RM563145_fase2_cap7
-# ThiagoSantos_RM5633275_fase2_cap7
+# ThiagoSantos_RM563327_fase2_cap7
 # ArthurRosado_RM562061_fase2_cap7
-# OtavioCustodio_RM5656065_fase2_cap7
+# OtavioCustodio_RM565606_fase2_cap7
 # Leandro_RM565240_fase2_cap7
 
 
